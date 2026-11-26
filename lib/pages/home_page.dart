@@ -124,6 +124,35 @@ class _HomePageState extends State<HomePage> {
     await _saveCourses();
   }
 
+  /// 删除课程（二次确认后从列表移除并持久化）
+  Future<void> _confirmDelete(String course) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('删除课程'),
+          content: Text('确定要从培养方案中删除「$course」吗？'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('删除'),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true) return;
+    setState(() => _courses.remove(course));
+    await _saveCourses();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('已删除「$course」')));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,16 +166,27 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 12),
               itemBuilder: (BuildContext context, int index) {
                 final course = _courses[index];
-                return ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) =>
-                            CourseDetailPage(courseName: course),
+                return Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) =>
+                                  CourseDetailPage(courseName: course),
+                            ),
+                          );
+                        },
+                        child: Text(course),
                       ),
-                    );
-                  },
-                  child: Text(course),
+                    ),
+                    IconButton(
+                      onPressed: () => _confirmDelete(course),
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: '删除课程',
+                    ),
+                  ],
                 );
               },
             ),

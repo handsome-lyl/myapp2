@@ -1,11 +1,11 @@
-{
-    "name": "flutter_net_lab",
-    "short_name": "flutter_net_lab",
+﻿{
+    "name": "我的培养方案",
+    "short_name": "培养方案",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "我的培养方案：课程管理与课程资料推荐",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
